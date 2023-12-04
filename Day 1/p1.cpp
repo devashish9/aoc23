@@ -1,12 +1,13 @@
 #include<iostream>
 #include <string>
 #include <fstream>
+#include <cstring>
 #include <vector>
 using namespace std;
 
 int main() {
   std::ifstream my_file;
-  my_file.open("data.txt");
+  my_file.open("test.txt");
   vector <string> lines;
   string curLine;
 
