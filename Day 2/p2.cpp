@@ -27,7 +27,6 @@ void update_game_cubes(Cubes &g_cubes, Cubes &s_cubes) {
 }
 
 void update_set_cube(Cubes &s_cubes, string color, int num) {
-  // cout << color << num << endl;
   if (color == "red") {
     s_cubes.reds = max(s_cubes.reds, num);
   }
@@ -37,7 +36,6 @@ void update_set_cube(Cubes &s_cubes, string color, int num) {
   else {
     s_cubes.blues = max(s_cubes.blues, num);
   }
-  cout << "Set" << s_cubes.reds << " " << s_cubes.blues << " " << s_cubes.greens << endl; 
 }
 
 Cubes handle_set(string g_set) {
@@ -54,13 +52,11 @@ Cubes handle_set(string g_set) {
     update_set_cube(s_cubes, color, amt);
     cur_delim = next_delim +2;
   }
-  // cout << "Set" << s_cubes.reds << " " << s_cubes.blues << " " << s_cubes.greens << endl; 
   cur_color = g_set.substr(cur_delim);
   int split = cur_color.find(" ");
   string color = cur_color.substr(split+1);
   int amt = stoi(cur_color.substr(0, split+1));
   update_set_cube(s_cubes, color, amt);
-  // cout << "Set" << s_cubes.reds << " " << s_cubes.blues << " " << s_cubes.greens << endl;
   return s_cubes;
 }
 
@@ -96,10 +92,9 @@ int main() {
   while(getline(my_file, curLine)) {
     Cubes g_cube = handle_game(curLine);
     int g_res = g_cube.mul();
-    cout << g_res << endl;
     res += g_res;
   }
 
-  cout << res;
+  cout << res << endl;
   return 0;
 }
