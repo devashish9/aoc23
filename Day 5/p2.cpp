@@ -6,6 +6,7 @@
 #include <iterator>
 #include <cstring>
 #include <algorithm>
+#include <queue>
 using namespace std;
 
 map<string, vector<map<string, long>>> mappers;
@@ -78,6 +79,108 @@ void create_maps(vector<string> lines) {
   create_map(mapping, buffer);
 }
 
+bool overlap(long s1, long e1, long s2, long e2) {
+  // cout << "Overlap " << s1 << " " << e1 << " " << s2 << " " << e2 << endl;
+  return s1 > e2 || s2 > e1;
+}
+
+typedef pair<vector<pair<long, long>>, vector<pair<long, long>>> updated_range; 
+
+updated_range map_range(long m_from, long m_to, long m_range, long r_start, long r_end) {
+  // cout << "Mapping: " << m_from << " " << m_to << " " << m_range << " " << r_start << " " << r_end << endl;
+  vector<pair<long, long>> mapped;
+  vector<pair<long, long>> unmapped; 
+
+  if (r_start >= m_from) {
+    if (r_end < m_from + m_range) {
+      // cout << "Case 1" << endl;
+      mapped.push_back(pair(r_start - m_from + m_to, r_end - m_from + m_to));
+    }
+    else {
+      // cout << "Case 2" << endl;
+      mapped.push_back(pair(r_start - m_from + m_to, m_to + m_range - 1));
+      unmapped.push_back(pair(m_from + m_range, r_end));
+    }
+  }
+  else {
+    if (r_end < m_from + m_range) {
+      // cout << "Case 3" << endl;
+      // cout << m_from + m_range << endl;
+      unmapped.push_back(pair(r_start, m_from - 1));
+      mapped.push_back(pair(m_to, r_end - m_from + m_to));
+    }
+    else {
+      // cout << "Case 4" << endl;
+      unmapped.push_back(pair(r_start, m_from - 1));
+      mapped.push_back(pair(m_to, m_to + m_range - 1));
+      unmapped.push_back(pair(m_from + m_range, r_end));
+    }
+  }
+  return pair(mapped, unmapped);
+}
+
+queue<pair<long, long>> transform_range(string mapping, pair<long, long> range_pair) {
+  queue<pair<long, long>> q;
+  queue<pair<long, long>> q_res;
+  q.push(range_pair);
+
+  while (!q.empty()) {
+    auto cur_pair = q.front();
+    bool mapped = false;
+    q.pop();
+    for (auto &m: mappers[mapping]) {
+      if (!overlap(m["m_from"], m["m_from"] + m["range"] - 1, cur_pair.first, cur_pair.second)) {
+        auto result_pair = map_range(m["m_from"], m["m_to"], m["range"], cur_pair.first, cur_pair.second);
+        for (auto&ps:result_pair.first) {
+          q_res.push(ps);
+        }
+        for (auto&ps:result_pair.second) {
+          q.push(ps);
+        }
+        mapped = true;
+        break;
+      }
+    }
+    if (!mapped) {
+      q_res.push(cur_pair);
+    }
+  }
+
+  return q_res;
+}
+
+vector<pair<long, long>> transform_ranges(string mapping, vector<pair<long, long>> ranges) {
+  vector<pair<long, long>> res;
+  for (auto &r_p: ranges) {
+    queue<pair<long, long>>  transformed_pair = transform_range(mapping, r_p);
+    while (!transformed_pair.empty()) {
+      res.push_back(transformed_pair.front());
+      transformed_pair.pop();
+    }
+  }
+  return res;
+}
+
+vector<pair<long, long>> push_seeds_through_maps(vector<pair<long, long>> ranges) {
+  vector<pair<long, long>> res = ranges;
+  for (auto &mapping: map_names) {
+    res = transform_ranges(mapping, res);
+    cout << "Mapping " << mapping << endl;
+    for (auto& res_p: res) {
+      cout << res_p.first << " " << res_p.second << endl;
+    }
+  }
+  return res;
+}
+
+vector<pair<long, long>> create_seed_ranges() {
+  vector<pair<long, long>> seed_ranges;
+  for (int i = 0; i < seeds.size(); i += 2) {
+    seed_ranges.push_back(pair(seeds[i], seeds[i] + seeds[i+1]));
+  }
+  return seed_ranges;
+}
+
 int main() {
   std::ifstream my_file;
   my_file.open("data.txt");
@@ -90,5 +193,18 @@ int main() {
   }
 
   create_maps(lines);
+
+  auto ranges = create_seed_ranges();
+  auto locs = push_seeds_through_maps(ranges);
+
+  long m = locs[0].first; 
+
+  for (auto &r : locs) {
+    if (r.first < m) {
+      m = r.first;
+    }
+  }
+
+  cout << m << endl;
   return 0;
 }
