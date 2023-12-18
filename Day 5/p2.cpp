@@ -116,6 +116,17 @@ updated_range map_range(long m_from, long m_to, long m_range, long r_start, long
       unmapped.push_back(pair(m_from + m_range, r_end));
     }
   }
+
+  // cout << "Mapped" << endl;
+  // for (const auto& pair : mapped) {
+  //   cout << pair.first << " " << pair.second << " ";
+  // }
+  // cout << endl;
+  // cout << "Unmapped" << endl;
+  // for (const auto& pair : unmapped) {
+  //   cout << pair.first << " " << pair.second << " ";
+  // }
+  // cout << endl;
   return pair(mapped, unmapped);
 }
 
@@ -165,10 +176,10 @@ vector<pair<long, long>> push_seeds_through_maps(vector<pair<long, long>> ranges
   vector<pair<long, long>> res = ranges;
   for (auto &mapping: map_names) {
     res = transform_ranges(mapping, res);
-    cout << "Mapping " << mapping << endl;
-    for (auto& res_p: res) {
-      cout << res_p.first << " " << res_p.second << endl;
-    }
+    // cout << "Mapping " << mapping << endl;
+    // for (auto& res_p: res) {
+    //   cout << res_p.first << " " << res_p.second << endl;
+    // }
   }
   return res;
 }
@@ -206,5 +217,4 @@ int main() {
   }
 
   cout << m << endl;
-  return 0;
 }
