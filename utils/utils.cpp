@@ -7,7 +7,7 @@ using namespace std;
 
 std::vector<std::string> readlines(std::string loc) {
   std::ifstream my_file;
-  my_file.open("test.txt");
+  my_file.open(loc);
   vector <string> lines;
   string curLine;
 
