@@ -20,7 +20,7 @@ vector<vector<char>> lines_to_chars(vector<string> lines) {
 
 
 
-pair<vector<bool>, vector<bool>> expand_space(vector<vector<char>> space) {
+pair<vector<int>, vector<int>> expand_space(vector<vector<char>> space) {
   vector<bool> cols(space[0].size(), true);
   vector<bool> rows(space.size(), true);
 
@@ -33,7 +33,19 @@ pair<vector<bool>, vector<bool>> expand_space(vector<vector<char>> space) {
     }
   }
 
-  return make_pair(rows, cols);
+  vector<int> true_rows;
+  vector<int> true_cols;
+  for (int i = 0; i < rows.size(); i++) {
+    if (rows[i]) {
+      true_rows.push_back(i);
+    }
+  }
+  for (int j = 0; j < cols.size(); j++) {
+    if (cols[j]) {
+      true_cols.push_back(j);
+    }
+  }
+  return make_pair(true_rows, true_cols);
 }
 
 vector<pair<int, int>> find_coords(vector<vector<char>> space) {
@@ -48,15 +60,33 @@ vector<pair<int, int>> find_coords(vector<vector<char>> space) {
   return coordinates;
 }
 
-long calculate_dist(vector<pair<int, int>> coords, pair<vector<bool>, vector<bool>> empties) {
+long calculate_dist(vector<pair<int, int>> coords, pair<vector<int>, vector<int>> empties) {
   long res = 0;
   for (int i = 0; i < coords.size(); i++) {
     int x1 = coords[i].first;
     int y1 = coords[i].second;
     for (int j = i; j < coords.size(); j++) {
+      long dist = 0;
       int x2 = coords[j].first;
       int y2 = coords[j].second;
-      res += abs(x1 - x2) + abs(y1 - y2);
+
+      int rows = 0;
+      for (auto row:empties.first) {
+        if ((row > x1 && row < x2) || (row < x1 && row > x2)) {
+          dist += 1000000;
+          rows += 1;
+        }
+      }
+
+      int cols = 0;
+      for (auto col:empties.second) {
+        if ((col > y1 && col < y2) || (col < y1 && col > y2)) {
+          dist += 1000000;
+          cols += 1;
+        }
+      }
+
+      res += abs(x1 - x2) + abs(y1 - y2) + dist - rows - cols;
     }
   }
   return res;
@@ -66,7 +96,7 @@ long calculate_dist(vector<pair<int, int>> coords, pair<vector<bool>, vector<boo
 int main() {
   vector<string> lines = readlines("data.txt");
   vector<vector<char>> updated_lines = lines_to_chars(lines);
-  pair<vector<bool>, vector<bool>> expanded_space = expand_space(updated_lines);
+  pair<vector<int>, vector<int>> expanded_space = expand_space(updated_lines);
   vector<pair<int, int>> coords = find_coords(updated_lines);
   long dist = calculate_dist(coords, expanded_space);
   cout << dist << endl;
