@@ -61,6 +61,8 @@
     "queue": "cpp",
     "iterator": "cpp",
     "stack": "cpp",
-    "set": "cpp"
+    "set": "cpp",
+    "functional": "cpp",
+    "unordered_set": "cpp"
   }
 }

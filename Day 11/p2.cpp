@@ -4,9 +4,6 @@
 #include <map>
 #include <algorithm>
 #include "../utils/utils.hpp"
-// #include <iterator>
-// #include <cassert>
-// #include <stack>
 using namespace std;
 
 vector<vector<char>> lines_to_chars(vector<string> lines) {
@@ -17,8 +14,6 @@ vector<vector<char>> lines_to_chars(vector<string> lines) {
   });
   return ch_lines;
 }
-
-
 
 pair<vector<int>, vector<int>> expand_space(vector<vector<char>> space) {
   vector<bool> cols(space[0].size(), true);
