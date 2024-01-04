@@ -7,7 +7,7 @@
 using namespace std;
 
 
-map<pair<vector<char>, vector<int>>, int> memo;
+map<pair<vector<char>, vector<int>>, long> memo;
 
 vector<int> get_spring_order(string line) {
   string delim = ",";
